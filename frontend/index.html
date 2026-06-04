@@ -3,90 +3,378 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DisasterIntel Dashboard</title>
+  <title>SURAKSHA — National Disaster Intelligence Fusion Center</title>
+  <meta name="description" content="Multi-source disaster intelligence fusion platform for national emergency coordination.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <div class="shell">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">Real-time disaster intelligence</p>
-        <h1>Layered crisis mapping with verified event context</h1>
-      </div>
-      <div class="hero-side">
-        <div class="hero-controls">
-          <button id="refresh-button" type="button">Refresh Data</button>
-          <button id="rerun-button" type="button">Rerun Ingestion</button>
-        </div>
-        <div id="ingestion-status" class="ingestion-banner">Ingestion status idle.</div>
-        <div class="hero-metrics" id="summary-cards"></div>
-      </div>
-    </header>
 
-    <main class="layout">
-      <section class="panel map-panel">
-        <div class="panel-header">
-          <div>
-            <p class="panel-kicker">GIS dashboard</p>
-            <h2>Layered disaster map</h2>
-          </div>
-          <div class="map-actions">
-            <label><input type="checkbox" checked data-layer-toggle="events"> Events</label>
-            <label><input type="checkbox" checked data-layer-toggle="weather"> Severe weather</label>
-            <label><input type="checkbox" checked data-layer-toggle="correlated"> Correlated alerts</label>
-          </div>
-        </div>
-        <div id="map"></div>
-      </section>
-
-      <aside class="sidebar">
-        <section class="panel usp-panel">
-          <div class="panel-header">
-            <div>
-              <p class="panel-kicker">Intelligence signals</p>
-              <h2>USP stack</h2>
-            </div>
-          </div>
-          <div id="usp-metrics" class="usp-grid"></div>
-        </section>
-
-        <section class="panel priority-panel">
-          <div class="panel-header">
-            <div>
-              <p class="panel-kicker">Operational priorities</p>
-              <h2>Top incidents to brief</h2>
-            </div>
-          </div>
-          <div id="priority-incidents" class="priority-list"></div>
-        </section>
-
-        <section class="panel timeline-panel">
-          <div class="panel-header">
-            <div>
-              <p class="panel-kicker">Unified event timeline</p>
-              <h2>Fused incident feed</h2>
-            </div>
-          </div>
-          <div id="timeline" class="timeline"></div>
-        </section>
-      </aside>
-    </main>
+  <!-- Government Classification Banner with Tricolor -->
+  <div class="gov-banner">
+    <span class="gov-marker">◈ RESTRICTED</span>
+    <span class="gov-banner-text">NATIONAL DISASTER INTELLIGENCE FUSION CENTER — AUTHORIZED PERSONNEL ONLY</span>
+    <span class="gov-marker">◈ RESTRICTED</span>
   </div>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
+  <!-- Hidden canvas — prevents app.js particle IIFE from erroring -->
+  <canvas id="particle-canvas" style="display:none;"></canvas>
+
+  <div class="shell">
+
+    <!-- ====== LEFT SIDEBAR NAVIGATION ====== -->
+    <aside class="nav-sidebar">
+
+      <!-- Brand Section -->
+      <div class="nav-brand">
+        <div class="brand-emblem">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-radar-icon lucide-radar"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><circle cx="12" cy="12" r="2"/><path d="m13.41 10.59 5.66-5.66"/></svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">SURAKSHA</span>
+          <span class="brand-sub">Disaster Intelligence<br>Fusion Engine</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <div class="nav-label">NAVIGATION</div>
+      <nav class="nav-menu">
+        <button class="tab-button active" data-tab="dashboard" id="tab-dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+          </svg>
+          Situation Overview
+        </button>
+        <button class="tab-button" data-tab="incidents" id="tab-incidents">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Incident Registry
+        </button>
+        <button class="tab-button" data-tab="timeline" id="tab-timeline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Event Timeline
+        </button>
+      </nav>
+
+      <!-- System Status -->
+      <div class="nav-label">SYSTEM STATUS</div>
+      <div class="nav-status">
+        <div class="nav-status-row">
+          <span>System</span>
+          <span class="st-online">● Operational</span>
+        </div>
+        <div class="nav-status-row">
+          <span>Threat Level</span>
+          <span class="st-elevated">▲ Elevated</span>
+        </div>
+        <div class="nav-status-row">
+          <span>Data Sources</span>
+          <span>3 Active</span>
+        </div>
+        <div class="nav-status-row">
+          <span>Network</span>
+          <span class="st-online">● Connected</span>
+        </div>
+      </div>
+
+      <!-- System Clock -->
+      <div class="nav-clock">
+        <span class="nav-clock-label">SYSTEM TIME (IST)</span>
+        <span class="nav-clock-time" id="system-clock">--:--:--</span>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="nav-footer">
+        <span>NDMA</span>
+        <span class="nav-footer-sep">·</span>
+        <span>Ministry of Home Affairs</span>
+      </div>
+    </aside>
+
+    <!-- ====== MAIN CONTENT AREA ====== -->
+    <div class="main-area">
+
+      <!-- Top Action Bar -->
+      <nav class="topbar" id="topbar">
+        <div class="topbar-left">
+          <!-- Mobile menu toggle (hidden on desktop) -->
+          <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Toggle Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <div class="topbar-title-group">
+            <h1 class="topbar-title">National Disaster Intelligence Fusion Center</h1>
+            <p class="topbar-subtitle">Real-time multi-source intelligence for emergency coordination</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div id="ingestion-status" class="status-pill">
+            <span class="status-dot"></span>
+            <span class="status-text">Idle</span>
+          </div>
+          <button id="refresh-button" type="button" class="action-btn" title="Refresh Data">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
+          <button id="rerun-button" type="button" class="action-btn action-btn-primary" title="Run Ingestion Pipeline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Run Ingestion
+          </button>
+        </div>
+      </nav>
+
+      <!-- Scrollable Main Content -->
+      <div class="main-scroll">
+
+        <!-- Hero Stats -->
+        <header class="hero-stats" id="hero-stats">
+          <div class="section-bar">
+            <span class="section-tag">SITUATIONAL AWARENESS</span>
+            <span class="section-line"></span>
+          </div>
+          <div class="hero-metrics" id="summary-cards">
+            <!-- Populated by app.js renderSummary() -->
+          </div>
+        </header>
+
+        <!-- ====== DASHBOARD TAB ====== -->
+        <main class="tab-content active" id="content-dashboard">
+
+          <!-- Map Section — Full Width -->
+          <section class="panel map-panel" id="map-section">
+            <div class="panel-header">
+              <div>
+                <span class="panel-kicker">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="10" r="3"/>
+                    <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/>
+                  </svg>
+                  GEOGRAPHIC INTELLIGENCE
+                </span>
+                <h2>Operational Situation Map</h2>
+              </div>
+              <div class="map-actions">
+                <label class="layer-toggle">
+                  <input type="checkbox" checked data-layer-toggle="events">
+                  <span class="toggle-indicator event-color"></span> Event Markers
+                </label>
+                <label class="layer-toggle">
+                  <input type="checkbox" checked data-layer-toggle="weather">
+                  <span class="toggle-indicator weather-color"></span> Weather Overlay
+                </label>
+                <label class="layer-toggle">
+                  <input type="checkbox" checked data-layer-toggle="correlated">
+                  <span class="toggle-indicator correlated-color"></span> Correlated Alerts
+                </label>
+              </div>
+            </div>
+            <div class="map-wrapper">
+              <div id="map"></div>
+              <div class="map-legend">
+                <div class="legend-title">MAP LEGEND</div>
+                <div class="legend-item"><span class="legend-dot legend-critical"></span> Critical</div>
+                <div class="legend-item"><span class="legend-dot legend-high"></span> High Severity</div>
+                <div class="legend-item"><span class="legend-dot legend-moderate"></span> Moderate</div>
+                <div class="legend-item"><span class="legend-ring"></span> Weather Zone</div>
+                <div class="legend-item"><span class="legend-chip"></span> Correlated</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Dashboard Lower Grid -->
+          <div class="dashboard-lower">
+            <!-- Intelligence Summary -->
+            <section class="panel intel-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="panel-kicker">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                    FUSION METRICS
+                  </span>
+                  <h2>Intelligence Summary</h2>
+                </div>
+              </div>
+              <div id="usp-metrics" class="usp-grid">
+                <!-- Populated by app.js renderUspMetrics() -->
+              </div>
+            </section>
+
+            <!-- Priority Incidents -->
+            <section class="panel priority-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="panel-kicker">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    </svg>
+                    PRIORITY QUEUE
+                  </span>
+                  <h2>Critical Incidents</h2>
+                </div>
+              </div>
+              <div id="priority-incidents" class="priority-list">
+                <!-- Populated by app.js renderPriority() -->
+              </div>
+            </section>
+          </div>
+        </main>
+
+        <!-- ====== INCIDENTS TAB ====== -->
+        <div class="tab-content" id="content-incidents">
+          <section class="panel full-panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-kicker">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  </svg>
+                  INCIDENT REGISTRY
+                </span>
+                <h2>All Recorded Incidents</h2>
+              </div>
+              <div class="filter-bar">
+                <select id="severity-filter" class="filter-select">
+                  <option value="all">All Severities</option>
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="low">Low</option>
+                </select>
+                <select id="type-filter" class="filter-select">
+                  <option value="all">All Types</option>
+                </select>
+              </div>
+            </div>
+            <div id="all-incidents" class="incidents-grid">
+              <!-- Populated by app.js renderAllIncidents() -->
+            </div>
+          </section>
+        </div>
+
+        <!-- ====== TIMELINE TAB ====== -->
+        <div class="tab-content" id="content-timeline">
+          <section class="panel full-panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-kicker">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  EVENT CHRONOLOGY
+                </span>
+                <h2>Unified Intelligence Timeline</h2>
+              </div>
+            </div>
+            <div id="timeline" class="timeline">
+              <!-- Populated by app.js renderTimeline() -->
+            </div>
+          </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="sys-footer">
+          <div class="footer-left">
+            <span class="footer-emblem">◈</span>
+            <span>SURAKSHA v2.1.0</span>
+            <span class="footer-sep">|</span>
+            <span>National Disaster Management Authority</span>
+            <span class="footer-sep">|</span>
+            <span>Ministry of Home Affairs, Govt. of India</span>
+          </div>
+          <div class="footer-right">
+            <span class="footer-restricted">RESTRICTED — OFFICIAL USE ONLY</span>
+          </div>
+        </footer>
+
+      </div><!-- end main-scroll -->
+    </div><!-- end main-area -->
+  </div><!-- end shell -->
+
+  <!-- ====== INCIDENT DETAIL MODAL ====== -->
+  <div class="modal-overlay" id="incident-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="/static/app.js"></script>
+
+  <!-- Post-init: Light map tiles + System clock + Sidebar toggle -->
+  <script>
+    /* --- Use dark map tiles to match dark theme --- */
+    (function () {
+      map.eachLayer(function (layer) {
+        if (layer instanceof L.TileLayer) map.removeLayer(layer);
+      });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+      }).addTo(map);
+      setTimeout(function () { map.invalidateSize(); }, 300);
+    })();
+
+    /* --- System Clock --- */
+    (function () {
+      var el = document.getElementById("system-clock");
+      if (!el) return;
+      function tick() {
+        el.textContent = new Date().toLocaleTimeString("en-IN", {
+          hour12: false, timeZone: "Asia/Kolkata",
+          hour: "2-digit", minute: "2-digit", second: "2-digit"
+        });
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    /* --- Mobile sidebar toggle --- */
+    (function () {
+      var btn = document.getElementById("mobile-menu-btn");
+      var sidebar = document.querySelector(".nav-sidebar");
+      var overlay = document.createElement("div");
+      overlay.className = "sidebar-overlay";
+      document.body.appendChild(overlay);
+
+      btn.addEventListener("click", function () {
+        sidebar.classList.toggle("open");
+        overlay.classList.toggle("active");
+      });
+      overlay.addEventListener("click", function () {
+        sidebar.classList.remove("open");
+        overlay.classList.remove("active");
+      });
+      /* Close sidebar on tab click (mobile) */
+      document.querySelectorAll(".tab-button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          sidebar.classList.remove("open");
+          overlay.classList.remove("active");
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

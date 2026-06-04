@@ -19,7 +19,7 @@ The system is organized into four layers:
 
 1. Ingestion
    - fetches raw data from Open-Meteo, USGS, GDACS, Reddit, Firecrawl/news, and IMD
-   - source code lives under [`ingestion/sources`](/C:/Users/ACER/Disaster-intelligence/ingestion/sources)
+   - source code lives under [`ingestion/sources`](ingestion/sources)
 
 2. Intelligence Processing
    - normalizes raw source data into common event objects
@@ -31,18 +31,18 @@ The system is organized into four layers:
 3. Backend API
    - serves latest intelligence payloads and dashboard-ready layers
    - provides priority incident, verification, and ingestion control endpoints
-   - backend code lives under [`backend`](/C:/Users/ACER/Disaster-intelligence/backend)
+   - backend code lives under [`backend`](backend)
 
 4. Frontend Dashboard
    - Leaflet GIS map
    - priority incident cards
    - unified event timeline
    - incident evidence/verification trail
-   - frontend code lives under [`frontend`](/C:/Users/ACER/Disaster-intelligence/frontend)
+   - frontend code lives under [`frontend`](frontend)
 
 ## Data Flow
 
-The main pipeline entry point is [`ingestion/pipeline.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/pipeline.py).
+The main pipeline entry point is [`ingestion/pipeline.py`](ingestion/pipeline.py).
 
 Pipeline phases:
 
@@ -55,18 +55,18 @@ Pipeline phases:
 
 Processed outputs are written to:
 
-- [`data/processed/latest_intelligence.json`](/C:/Users/ACER/Disaster-intelligence/data/processed/latest_intelligence.json)
-- timestamped snapshots in [`data/processed`](/C:/Users/ACER/Disaster-intelligence/data/processed)
+- [`data/processed/latest_intelligence.json`](data/processed/latest_intelligence.json)
+- timestamped snapshots in [`data/processed`](data/processed)
 
 Raw per-source snapshots are written to:
 
-- [`data/raw`](/C:/Users/ACER/Disaster-intelligence/data/raw)
+- [`data/raw`](data/raw)
 
 ## Core Modules
 
 ### Event Models
 
-Unified domain models are defined in [`models/events.py`](/C:/Users/ACER/Disaster-intelligence/models/events.py).
+Unified domain models are defined in [`models/events.py`](models/events.py).
 
 Main objects:
 
@@ -81,15 +81,15 @@ These models are the common schema used by all ingestion sources.
 
 Implemented source adapters:
 
-- [`open_meteo.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/sources/open_meteo.py)
-- [`imd_weather.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/sources/imd_weather.py)
-- [`usgs_earthquake.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/sources/usgs_earthquake.py)
-- [`gdacs_alerts.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/sources/gdacs_alerts.py)
-- [`social_news.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/sources/social_news.py)
+- [`open_meteo.py`](ingestion/sources/open_meteo.py)
+- [`imd_weather.py`](ingestion/sources/imd_weather.py)
+- [`usgs_earthquake.py`](ingestion/sources/usgs_earthquake.py)
+- [`gdacs_alerts.py`](ingestion/sources/gdacs_alerts.py)
+- [`social_news.py`](ingestion/sources/social_news.py)
 
 ### Verification
 
-Cross-source verification logic lives in [`cross_verify.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/cross_verify.py).
+Cross-source verification logic lives in [`cross_verify.py`](ingestion/cross_verify.py).
 
 It currently uses:
 
@@ -100,7 +100,7 @@ It currently uses:
 
 ### Fusion
 
-Incident fusion lives in [`fusion.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/fusion.py).
+Incident fusion lives in [`fusion.py`](ingestion/fusion.py).
 
 It merges repeated events into responder-facing incidents based on:
 
@@ -110,7 +110,7 @@ It merges repeated events into responder-facing incidents based on:
 
 ### Intelligence Enrichment
 
-Incident intelligence enrichment lives in [`intelligence.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/intelligence.py).
+Incident intelligence enrichment lives in [`intelligence.py`](ingestion/intelligence.py).
 
 It adds:
 
@@ -124,7 +124,7 @@ It adds:
 
 ### NLP
 
-NLP utilities live in [`nlp.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/nlp.py).
+NLP utilities live in [`nlp.py`](ingestion/nlp.py).
 
 Current behavior:
 
@@ -138,7 +138,7 @@ Important note:
 
 ## Backend API
 
-Main API app: [`backend/app.py`](/C:/Users/ACER/Disaster-intelligence/backend/app.py)
+Main API app: [`backend/main.py`](backend/main.py)
 
 Key endpoints:
 
@@ -155,7 +155,7 @@ Key endpoints:
 
 ### Incident Verification Workflow
 
-Incident-linked external verification is implemented in [`verification.py`](/C:/Users/ACER/Disaster-intelligence/backend/services/verification.py).
+Incident-linked external verification is implemented in [`verification.py`](backend/services/verification.py).
 
 Flow:
 
@@ -173,9 +173,9 @@ Flow:
 
 Frontend files:
 
-- [`index.html`](/C:/Users/ACER/Disaster-intelligence/frontend/index.html)
-- [`app.js`](/C:/Users/ACER/Disaster-intelligence/frontend/app.js)
-- [`styles.css`](/C:/Users/ACER/Disaster-intelligence/frontend/styles.css)
+- [`index.html`](frontend/index.html)
+- [`app.js`](frontend/app.js)
+- [`styles.css`](frontend/styles.css)
 
 Dashboard sections:
 
@@ -194,7 +194,7 @@ Refresh behavior:
 
 ## Configuration
 
-Primary configuration lives in [`config/settings.py`](/C:/Users/ACER/Disaster-intelligence/config/settings.py).
+Primary configuration lives in [`config/settings.py`](config/settings.py).
 
 Configured source families:
 
@@ -235,7 +235,7 @@ python -m ingestion.pipeline
 ### Run the backend and dashboard
 
 ```powershell
-python -m uvicorn backend.app:app --reload
+python -m uvicorn backend.main:app --reload
 ```
 
 Open:
@@ -261,11 +261,11 @@ The project currently maps to the planned USP stack as follows:
 
 | USP | Status | Current Implementation |
 | --- | --- | --- |
-| Cross-Source Verification | Implemented | Heuristic weighting in [`cross_verify.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/cross_verify.py) |
-| Temporal Anomaly Correlation | Implemented | Spike detection in [`cross_verify.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/cross_verify.py) |
-| AI Relevance Index | Implemented | Incident-level relevance scoring in [`intelligence.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/intelligence.py) |
-| Impact Radius Estimation | Partially Implemented | Earthquake/event estimates in [`events.py`](/C:/Users/ACER/Disaster-intelligence/models/events.py) and [`intelligence.py`](/C:/Users/ACER/Disaster-intelligence/ingestion/intelligence.py) |
-| Freshness Decay Scoring | Implemented | Freshness calculation in [`events.py`](/C:/Users/ACER/Disaster-intelligence/models/events.py) |
+| Cross-Source Verification | Implemented | Heuristic weighting in [`cross_verify.py`](ingestion/cross_verify.py) |
+| Temporal Anomaly Correlation | Implemented | Spike detection in [`cross_verify.py`](ingestion/cross_verify.py) |
+| AI Relevance Index | Implemented | Incident-level relevance scoring in [`intelligence.py`](ingestion/intelligence.py) |
+| Impact Radius Estimation | Partially Implemented | Earthquake/event estimates in [`events.py`](models/events.py) and [`intelligence.py`](ingestion/intelligence.py) |
+| Freshness Decay Scoring | Implemented | Freshness calculation in [`events.py`](models/events.py) |
 | Unified Event Timeline | Implemented | Incident timeline in processed output and dashboard |
 
 ## Known Limitations
