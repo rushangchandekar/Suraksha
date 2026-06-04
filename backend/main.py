@@ -19,7 +19,7 @@ from backend.services.verification import IncidentVerificationService
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-STATIC_DIR = BASE_DIR / "frontend"
+STATIC_DIR = BASE_DIR / "dashboard"
 
 app = FastAPI(title="DisasterIntel API", version="0.1.0")
 app.add_middleware(

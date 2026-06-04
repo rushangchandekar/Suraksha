@@ -157,6 +157,8 @@ function PipelinePhase({
    MAIN PAGE
    ═══════════════════════════════════════════════════════ */
 export default function LandingPage() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000";
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -214,7 +216,7 @@ export default function LandingPage() {
               ))}
               <div className="w-px h-6 bg-gray-200 mx-2" />
               <a
-                href="http://127.0.0.1:8000/"
+                href={backendUrl}
                 target="_blank"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gov-navy border border-gov-navy/20 rounded-lg hover:bg-gov-navy hover:text-white transition-all duration-300"
               >
@@ -222,7 +224,7 @@ export default function LandingPage() {
                 Dashboard
               </a>
               <a
-                href="http://127.0.0.1:8000/docs"
+                href={`${backendUrl}/docs`}
                 target="_blank"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-gov-navy text-white rounded-lg hover:bg-gov-navy-light transition-colors"
               >
@@ -257,14 +259,14 @@ export default function LandingPage() {
               ))}
               <div className="pt-2 border-t border-gray-100 flex gap-2">
                 <a
-                  href="http://127.0.0.1:8000/"
+                  href={backendUrl}
                   target="_blank"
                   className="flex-1 text-center px-4 py-2.5 text-sm font-semibold border border-gov-navy/20 text-gov-navy rounded-lg"
                 >
                   Dashboard
                 </a>
                 <a
-                  href="http://127.0.0.1:8000/docs"
+                  href={`${backendUrl}/docs`}
                   target="_blank"
                   className="flex-1 text-center px-4 py-2.5 text-sm font-semibold bg-gov-navy text-white rounded-lg"
                 >
@@ -309,7 +311,7 @@ export default function LandingPage() {
 
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                 <a
-                  href="http://127.0.0.1:8000/"
+                  href={backendUrl}
                   target="_blank"
                   className="group inline-flex items-center gap-2 px-6 py-3 bg-gov-saffron hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg shadow-gov-saffron/25 hover:shadow-xl hover:-translate-y-0.5"
                 >
@@ -318,7 +320,7 @@ export default function LandingPage() {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
                 <a
-                  href="http://127.0.0.1:8000/docs"
+                  href={`${backendUrl}/docs`}
                   target="_blank"
                   className="group inline-flex items-center gap-2 px-6 py-3 border-2 border-white/20 hover:border-white/40 text-white font-semibold rounded-lg transition-all duration-300 hover:bg-white/5"
                 >
@@ -613,7 +615,7 @@ export default function LandingPage() {
                     { cmd: "", isComment: true },
                     { cmd: "# Trigger ingestion via API", isComment: true },
                     {
-                      cmd: "curl -X POST http://127.0.0.1:8000/api/ingestion/run",
+                      cmd: `curl -X POST ${backendUrl}/api/ingestion/run`,
                       isComment: false,
                     },
                   ].map((line, i) =>
@@ -668,7 +670,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <a
-                  href="http://127.0.0.1:8000/docs"
+                  href={`${backendUrl}/docs`}
                   target="_blank"
                   className="inline-flex items-center gap-2 mt-4 text-sm font-semibold text-gov-blue-accent hover:text-gov-navy transition-colors"
                 >
@@ -844,7 +846,7 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <a
-              href="http://127.0.0.1:8000/"
+              href={backendUrl}
               target="_blank"
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-gov-saffron hover:bg-orange-600 text-white font-semibold rounded-lg transition-all shadow-lg shadow-gov-saffron/25 hover:-translate-y-0.5"
             >
@@ -852,7 +854,7 @@ export default function LandingPage() {
               Open Dashboard
             </a>
             <a
-              href="http://127.0.0.1:8000/docs"
+              href={`${backendUrl}/docs`}
               target="_blank"
               className="inline-flex items-center gap-2 px-8 py-3.5 border-2 border-white/20 hover:border-white/40 text-white font-semibold rounded-lg transition-all hover:bg-white/5"
             >
@@ -897,7 +899,7 @@ export default function LandingPage() {
                 Sources
               </a>
               <a
-                href="http://127.0.0.1:8000/docs"
+                href={`${backendUrl}/docs`}
                 target="_blank"
                 className="hover:text-white transition-colors"
               >
